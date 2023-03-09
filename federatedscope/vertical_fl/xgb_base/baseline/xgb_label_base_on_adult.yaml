@@ -27,12 +27,14 @@ train:
     eta: 0.56
 vertical:
   use: True
+  mode: 'label_based'
   dims: [47, 104]
   algo: 'xgb'
-  protect_object: 'feature_order'
-  protect_method: 'op_boost'
-  protect_args: [{'algo': 'global', 'epsilon': 2, 'bucket_num': 50}]
   data_size_for_debug: 0
+  protect_object: 'grad_and_hess'
+  protect_method: 'he'
+  key_size: 512
+  protect_args: [ { 'bucket_num': 50 } ]
 eval:
   freq: 3
   best_res_update_round_wise_key: test_loss

@@ -1,3 +1,6 @@
+import pickle
+import sys
+
 import numpy as np
 import logging
 import copy
@@ -29,6 +32,9 @@ class XGBClient(Client):
         self.own_label = ('y' in data['train'])
         self.msg_buffer = {'train': {}, 'eval': {}}
         self.client_num = self._cfg.federate.client_num
+
+        self.communication_num = 0
+        self.communication_overhead = 0
 
         self.feature_order = None
         self.merged_feature_order = None
@@ -89,6 +95,10 @@ class XGBClient(Client):
                             f'["label_based", "order_based"], but got '
                             f'{self._cfg.vertical.mode}.')
 
+        self.communication_num += 1
+        self.communication_overhead += sys.getsizeof(
+            pickle.dumps(training_info))
+
         self.comm_manager.send(
             Message(msg_type='training_info',
                     sender=self.ID,
@@ -105,6 +115,13 @@ class XGBClient(Client):
         logger.info(
             f"================= client {self.ID} received finish message "
             f"=================")
+
+        logger.info(f'ID: {self.ID}, commu_num: {self.communication_num}, '
+                    f'commu_oh_by_pickle.dumps: {self.communication_overhead}')
+        logger.info(
+            f'ID: {self.ID}, total_upload_bytes: '
+            f'{self._monitor.total_upload_bytes}'
+            f', total_download_bytes: {self._monitor.total_download_bytes}')
         # self._monitor.finish_fl()
 
     def start_a_new_training_round(self,
@@ -125,6 +142,8 @@ class XGBClient(Client):
                                state=self.state,
                                receiver=receiver,
                                content=batch_index)
+        self.communication_num += 1
+        self.communication_overhead += sys.getsizeof(pickle.dumps(batch_index))
         self.comm_manager.send(send_message)
 
     def check_and_move_on(self):

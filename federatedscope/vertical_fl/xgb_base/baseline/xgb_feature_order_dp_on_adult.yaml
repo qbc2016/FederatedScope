@@ -16,7 +16,7 @@ data:
   splits: [1.0, 0.0]
 dataloader:
   type: raw
-  batch_size: 2000
+  batch_size: 40000
 criterion:
   type: CrossEntropyLoss
 trainer:
@@ -24,15 +24,15 @@ trainer:
 train:
   optimizer:
     # learning rate for xgb model
-    eta: 0.5
+    eta: 0.56
 vertical:
   use: True
-  dims: [7, 14]
+  dims: [47, 104]
   algo: 'xgb'
   protect_object: 'feature_order'
   protect_method: 'dp'
-  protect_args: [{'bucket_num': 100, 'epsilon':10}]
-  data_size_for_debug: 2000
+  protect_args: [{'bucket_num': 50}] #, 'epsilon':2}]
+  data_size_for_debug: 0
 eval:
   freq: 3
   best_res_update_round_wise_key: test_loss

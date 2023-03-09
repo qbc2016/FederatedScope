@@ -91,6 +91,19 @@ class Adult(object):
             'capital_gain', 'capital_loss', 'hours_per_week', 'native_country',
             'wage_class'
         ]
+        # 'workclass': 8
+        # 'education': 16
+        # 'marital-status': 7
+        # 'occupation': 14
+        # 'relationship': 6
+        # 'race': 5
+        # 'sex': 2
+        # 'native_country': 41
+        # 1 8 1 16 1 7 14 6 5 2 1 1 1 41 1
+        # [7, 14] --> [48, 106]
+        # after remove the rows containing "?"
+        # 1 7 1 16 1 7 14 6 5 2 1 1 1 41 1
+        # [7, 14] --> [47, 104]
 
         train_set.columns = col_labels
         test_set.columns = col_labels
@@ -103,10 +116,33 @@ class Adult(object):
         })
 
         combined_set = pd.concat([train_set, test_set], axis=0)
+
+        # <=50k set to 0, >50k set to 1
+        combined_set['wage_class'] = pd.Categorical(
+            combined_set['wage_class']).codes
+
+        prefix = [
+            'workclass', 'education', 'marital_status', 'occupation',
+            'relationship', 'race', 'sex', 'native_country'
+        ]
+        new_combined_set = pd.DataFrame()
+        for feature in combined_set.columns:
+            if feature in prefix:
+                new_combined_set = pd.concat([
+                    new_combined_set,
+                    pd.get_dummies(combined_set[feature], prefix=feature)
+                ],
+                                             axis=1)
+            else:
+                new_combined_set = pd.concat(
+                    [new_combined_set, combined_set[feature]], axis=1)
+        combined_set = new_combined_set
+        '''
         for feature in combined_set.columns:
             if combined_set[feature].dtype == 'object':
                 combined_set[feature] = pd.Categorical(
                     combined_set[feature]).codes
+        '''
 
         train_set = combined_set[:train_set.shape[0]]
         test_set = combined_set[train_set.shape[0]:]

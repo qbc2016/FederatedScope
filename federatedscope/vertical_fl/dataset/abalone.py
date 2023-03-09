@@ -88,6 +88,10 @@ class Abalone(object):
         fpath = os.path.join(self.root, self.base_folder)
         file = osp.join(fpath, self.raw_file)
         data = self._read_raw(file)
+        data.columns = [
+            'Sex', 'Length', 'Diameter', 'Height', 'Whole weight',
+            'Shucked weight', 'Viscera weight', 'Shell weight', 'Rings'
+        ]
         data = self._process(data)
         if self.data_size_for_debug != 0:
             subset_size = min(len(data), self.data_size_for_debug)
@@ -102,8 +106,21 @@ class Abalone(object):
         return data
 
     def _process(self, data):
-        data[0] = data[0].replace({'F': 2, 'M': 1, 'I': 0})
-        data = data.values
+        # data['Sex'] = data['Sex'].replace({'F': 2, 'M': 1, 'I': 0})
+        new_data = pd.DataFrame()
+        for feature in data.columns:
+            if feature == 'Sex':
+                new_data = pd.concat(
+                    [new_data,
+                     pd.get_dummies(data[feature], prefix=feature)],
+                    axis=1)
+            else:
+                new_data = pd.concat([new_data, data[feature]], axis=1)
+        # feature partition [4, 8] --> [6, 10]
+
+        new_data['Rings'] += 1.5
+        data = new_data.values
+
         return data
 
     def _check_existence(self):

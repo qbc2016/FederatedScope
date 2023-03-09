@@ -75,7 +75,7 @@ class Credit(object):
 
         # the following codes are used to choose balanced data
         # they may be removed later
-        # '''
+        '''
         sample_size = 150000
 
         def balance_sample(sample_size, y):
@@ -92,7 +92,7 @@ class Credit(object):
 
         sample_idx = balance_sample(sample_size, data[:, 0])
         data = data[sample_idx]
-        # '''
+        '''
 
         if self.data_size_for_debug != 0:
             subset_size = min(len(data), self.data_size_for_debug)

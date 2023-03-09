@@ -1,3 +1,5 @@
+import pickle
+import sys
 import types
 import logging
 import numpy as np
@@ -41,18 +43,31 @@ def wrap_client_for_evaluation(client):
             'test_total': len(self.test_y)
         })
 
+        self.communication_num += 1
+        self.communication_overhead += sys.getsizeof(
+            pickle.dumps(modified_metrics))
+
         self.comm_manager.send(
             Message(msg_type='eval_metric',
                     sender=self.ID,
                     state=self.state,
                     receiver=[self.server_id],
                     content=modified_metrics))
+
+        self.communication_num += 1
+        self.communication_overhead += sys.getsizeof(
+            pickle.dumps(self.feature_importance))
+
         self.comm_manager.send(
             Message(msg_type='feature_importance',
                     sender=self.ID,
                     state=self.state,
                     receiver=[self.server_id],
                     content=self.feature_importance))
+
+        self.communication_num += 1
+        self.communication_overhead += sys.getsizeof(pickle.dumps('None'))
+
         self.comm_manager.send(
             Message(msg_type='ask_for_feature_importance',
                     sender=self.ID,
@@ -96,6 +111,11 @@ def wrap_client_for_evaluation(client):
             if self.model[tree_num][node_num].member == self.ID:
                 self.callback_func_for_split_request(send_message)
             else:
+
+                self.communication_num += 1
+                self.communication_overhead += sys.getsizeof(
+                    pickle.dumps(send_message.content))
+
                 self.comm_manager.send(send_message)
 
         else:
@@ -119,6 +139,11 @@ def wrap_client_for_evaluation(client):
         if sender == self.ID:
             self.callback_func_for_split_result(send_message)
         else:
+
+            self.communication_num += 1
+            self.communication_overhead += sys.getsizeof(
+                pickle.dumps(send_message.content))
+
             self.comm_manager.send(send_message)
 
     def callback_func_for_split_result(self, message: Message):
@@ -131,6 +156,11 @@ def wrap_client_for_evaluation(client):
 
     def callback_func_for_feature_importance(self, message: Message):
         state = message.state
+
+        self.communication_num += 1
+        self.communication_overhead += sys.getsizeof(
+            pickle.dumps(self.feature_importance))
+
         self.comm_manager.send(
             Message(msg_type='feature_importance',
                     sender=self.ID,
