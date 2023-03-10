@@ -13,12 +13,6 @@ def wrap_client_for_homo_evaluation(client):
         self.criterion = get_vertical_loss(loss_type=self._cfg.criterion.type,
                                            model_type=self._cfg.model.type)
 
-        from federatedscope.vertical_fl.Paillier import \
-            abstract_paillier
-        keys = abstract_paillier.generate_paillier_keypair(
-            n_length=self._cfg.vertical.key_size)
-        self.public_key, self.private_key = keys
-
         off_node_list = list()
         for node_num in range(2**self.model.max_depth - 1):
             if self.model[tree_num][node_num].status == 'off':
