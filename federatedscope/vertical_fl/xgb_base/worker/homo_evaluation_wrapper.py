@@ -82,7 +82,7 @@ def wrap_client_for_homo_evaluation(client):
                 Message(msg_type='pred_result',
                         sender=self.ID,
                         state=self.state,
-                        receiver=self._cfg.federate.client_num,
+                        receiver=self.client_num,
                         content=(tree_num, enc_res)))
 
     def _fetch_test_data(self):
