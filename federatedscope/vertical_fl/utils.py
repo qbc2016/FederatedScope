@@ -15,7 +15,9 @@ def wrap_vertical_server(server, config):
 
 def wrap_vertical_client(client, config):
     if config.vertical.algo in ['xgb', 'gbdt', 'rf']:
+        if config.vertical.eval == 'homo':
+            client = wrap_client_for_homo_evaluation(client)
+        else:
+            client = wrap_client_for_evaluation(client)
         client = wrap_client_for_train(client)
-        client = wrap_client_for_homo_evaluation(client)
-        # client = wrap_client_for_evaluation(client)
     return client
