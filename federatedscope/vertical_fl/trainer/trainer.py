@@ -288,7 +288,8 @@ class VerticalTrainer(object):
                     return self._compute_for_node(tree_num, node_num + 1)
             elif self.cfg.vertical.mode == 'label_based':
                 results = (self.model[tree_num][node_num].grad,
-                           self.model[tree_num][node_num].hess, tree_num,
+                           self.model[tree_num][node_num].hess,
+                           self.model[tree_num][node_num].indicator, tree_num,
                            node_num)
                 return 'call_for_local_gain', results
 
