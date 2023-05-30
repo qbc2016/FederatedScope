@@ -6,7 +6,7 @@ federate:
   mode: standalone
   client_num: 1
   total_round_num: 200
-  save_to: "llama.ckpt"
+  save_to: "raw_llama_full.ckpt"
 data:
   root: data/
   type: 'alpaca_data.json@llm'
@@ -17,8 +17,10 @@ llm:
   chat:
     max_len: 1000
   adapter:
-    use: True
+    use: False
     args: [ { 'adapter_package': 'peft', 'adapter_method': 'lora', 'r': 8, 'lora_alpha': 32, 'lora_dropout': 0.1 } ]
+  accelerate:
+    use: True
 dataloader:
   batch_size: 1
 model:
@@ -29,7 +31,7 @@ train:
   optimizer:
     lr: 0.0001
     weight_decay: 0.0
-  is_enable_half: True
+  is_enable_half: False
 criterion:
   type: CrossEntropyLoss
 trainer:
