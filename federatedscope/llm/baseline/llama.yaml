@@ -6,7 +6,7 @@ federate:
   mode: standalone
   client_num: 1
   total_round_num: 200
-  save_to: "raw_llama_full.ckpt"
+  save_to: "official_raw_llama_full.ckpt"
 data:
   root: data/
   type: 'alpaca_data.json@llm'
@@ -19,7 +19,7 @@ llm:
   adapter:
     use: False
     args: [ { 'adapter_package': 'peft', 'adapter_method': 'lora', 'r': 8, 'lora_alpha': 32, 'lora_dropout': 0.1 } ]
-  accelerate:
+  accelerator:
     use: True
 dataloader:
   batch_size: 1
