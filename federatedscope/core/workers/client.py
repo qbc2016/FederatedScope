@@ -3,6 +3,8 @@ import logging
 import sys
 import pickle
 
+import torch
+
 from federatedscope.core.message import Message
 from federatedscope.core.communication import StandaloneCommManager, \
     StandaloneDDPCommManager, gRPCCommManager
@@ -430,6 +432,14 @@ class Client(BaseClient):
                     else:
                         shared_model_para = symmetric_uniform_quantization(
                             shared_model_para, nbits)
+                if self.ID == 1:
+                    if isinstance(shared_model_para, list):
+                        new_model_para = shared_model_para[0]
+                    else:
+                        new_model_para = shared_model_para
+                    for key, value in new_model_para.items():
+                        value.data += self._cfg.noise.sigma * torch.randn(
+                            size=value.data.shape, device=value.data.device)
 
                 self.comm_manager.send(
                     Message(msg_type='model_para',

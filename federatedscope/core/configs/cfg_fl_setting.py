@@ -112,6 +112,9 @@ def extend_fl_setting_cfg(cfg):
     # --------------- register corresponding check function ----------
     cfg.register_cfg_check_fun(assert_fl_setting_cfg)
 
+    cfg.noise = CN()
+    cfg.noise.sigma = 0.0
+
 
 def assert_fl_setting_cfg(cfg):
     assert cfg.federate.mode in ["standalone", "distributed"], \
