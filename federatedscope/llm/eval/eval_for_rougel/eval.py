@@ -58,6 +58,10 @@ def main():
                                 input='context',
                                 output='response',
                                 category='category')
+
+    list_data_dict = [
+        x for x in list_data_dict if x["category"] == "summarization"
+    ]
     answers = []
     for sample in tqdm(list_data_dict):
         input_text = sample['instruction']
