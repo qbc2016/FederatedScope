@@ -12,6 +12,9 @@ from federatedscope.core.auxiliaries.logging import update_logger
 from federatedscope.llm.misc.fschat import FSChatBot
 from federatedscope.core.data.utils import download_url
 
+# import torch._dynamo
+# torch._dynamo.config.suppress_errors = True
+
 transformers.logging.set_verbosity(40)
 
 choices = ["A", "B", "C", "D"]
